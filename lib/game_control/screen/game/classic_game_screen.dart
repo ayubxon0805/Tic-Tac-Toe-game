@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:flutter_application_2/game_control/prsentation/resources/colors.dart';
 
-class InfiniteGameScreen extends StatefulWidget {
+class ClassicGameScreen extends StatefulWidget {
   final String currentPlayer;
-  const InfiniteGameScreen({super.key, required this.currentPlayer});
+  const ClassicGameScreen({super.key, required this.currentPlayer});
 
   @override
-  State<InfiniteGameScreen> createState() => _InfiniteGameScreen();
+  State<ClassicGameScreen> createState() => _ClassicGameScreen();
 }
 
-class _InfiniteGameScreen extends State<InfiniteGameScreen> {
+class _ClassicGameScreen extends State<ClassicGameScreen> {
   List<String> _board = [];
   List<int> xPositions = [];
   List<int> oPositions = [];
   int bot = 0;
   int user = 0;
+
   String winner = "";
   String _currentPlayer = "";
-  bool isPlay = false;
 
   @override
   void initState() {
@@ -58,11 +58,8 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
         break;
       }
     }
-
     // if (winner == '' && !_board.contains('')) {
-    //   setState(() {
-    //     winner = 'Friendship 🤝';
-    //   });
+    //   winner = 'Friendship 🤝';
     // }
   }
 
@@ -70,9 +67,6 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
     if (_board[index] == '' && winner == '') {
       setState(() {
         if (_currentPlayer == 'x') {
-          if (xPositions.length == 3) {
-            isPlay = true;
-          }
           if (xPositions.length >= 3) {
             int oldXPosition = xPositions.removeAt(0);
             _board[oldXPosition] = '';
@@ -87,43 +81,10 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
         }
 
         _board[index] = _currentPlayer;
-        checkWinner();
         _switchPlayer();
-
-        if (winner == '' && _currentPlayer == '0') {
-          _playBot();
-        }
+        checkWinner();
       });
     }
-  }
-
-  void _playBot() {
-    Future.delayed(const Duration(milliseconds: 600), () {
-      // Random
-      List<int> controlBot = [];
-      for (int i = 0; i < _board.length; i++) {
-        if (_board[i] == '') {
-          controlBot.add(i);
-        }
-      }
-
-      if (controlBot.isNotEmpty) {
-        int randomIndex = Random().nextInt(controlBot.length);
-        int botMove = controlBot[randomIndex];
-
-        setState(() {
-          if (oPositions.length >= 3) {
-            int oldOPosition = oPositions.removeAt(0);
-            _board[oldOPosition] = '';
-          }
-          oPositions.add(botMove);
-          print('bu botMove = $botMove');
-          _board[botMove] = '0';
-          checkWinner();
-          _switchPlayer();
-        });
-      }
-    });
   }
 
   @override
@@ -136,7 +97,7 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'Infinite Mode',
+              'Classic Mode',
               style: TextStyle(
                   fontSize: 20,
                   color: Colors.white,
@@ -167,8 +128,8 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(colors: [
-            Colors.black,
-            Colors.black,
+            AppColors.dark,
+            AppColors.dark,
             Color.fromARGB(255, 59, 69, 82),
           ], begin: Alignment.topLeft, end: Alignment.bottomRight),
         ),
@@ -187,7 +148,7 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
                       height: 80,
                     ),
                     Text(
-                      'You: $user',
+                      'You:$user',
                       style: const TextStyle(
                           fontSize: 25,
                           color: Colors.red,
@@ -200,10 +161,10 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
                   height: 50,
                   child: Text(
                     winner == ""
-                        ? " ${_currentPlayer == 'x' ? '  Your turn' : "Please wait"}"
-                        : ' ${winner == 'x' ? "You Won!" : " Bot Won!"}',
+                        ? " ${_currentPlayer == 'x' ? '      X turn' : "      O turn"}"
+                        : ' ${winner == 'x' ? "     X Won!" : "      O Won!"}',
                     style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.white,
                         fontSize: 30,
                         fontWeight: FontWeight.bold),
                   ),
@@ -216,7 +177,7 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
                       height: 80,
                     ),
                     Text(
-                      'Bot: $bot',
+                      'Friend:$bot',
                       style: const TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.w500,
@@ -247,27 +208,22 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(5),
                         child: Container(
-                          // ignore: sort_child_properties_last
                           child: _board[index] != ""
                               ? Center(
-                                  child: _board[index] == '0'
-                                      ? Image.asset(
-                                          'assets/dumaloq.png',
-                                          width: 100,
-                                          height: 100,
-                                        )
-                                      : Image.asset(
-                                          'assets/xharfi.png',
-                                          width: 100,
-                                          height: 100,
-                                        ),
+                                  child: Image.asset(
+                                    _board[index] == '0'
+                                        ? 'assets/dumaloq.png'
+                                        : 'assets/xharfi.png',
+                                    width: 100,
+                                    height: 100,
+                                  ),
                                 )
                               : const SizedBox(),
                           decoration: BoxDecoration(
                               color: Colors.black,
                               borderRadius: BorderRadius.circular(10),
-                              border:
-                                  Border.all(color: Colors.white, width: 2)),
+                              border: Border.all(
+                                  color: AppColors.shadow, width: 2)),
                         ),
                       ),
                     ),
