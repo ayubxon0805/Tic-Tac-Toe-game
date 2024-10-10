@@ -26,6 +26,19 @@ class _ClassicGameScreen extends State<ClassicGameScreen> {
     super.initState();
   }
 
+  Color _getBoxColor(int index) {
+    if (_board[index] == 'x' &&
+        xPositions.length == 3 &&
+        xPositions[0] == index) {
+      return const Color.fromARGB(255, 88, 88, 88);
+    } else if (_board[index] == '0' &&
+        oPositions.length == 3 &&
+        oPositions[0] == index) {
+      return const Color.fromARGB(255, 88, 88, 88);
+    }
+    return Colors.black;
+  }
+
   void _switchPlayer() {
     _currentPlayer = _currentPlayer == 'x' ? '0' : 'x';
   }
@@ -220,7 +233,7 @@ class _ClassicGameScreen extends State<ClassicGameScreen> {
                                 )
                               : const SizedBox(),
                           decoration: BoxDecoration(
-                              color: Colors.black,
+                              color: _getBoxColor(index),
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
                                   color: AppColors.shadow, width: 2)),

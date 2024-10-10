@@ -18,7 +18,16 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
   String winner = "";
   String _currentPlayer = "";
   bool isPlay = false;
-
+  var lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
   @override
   void initState() {
     _board = List.filled(9, '');
@@ -26,21 +35,24 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
     super.initState();
   }
 
+  Color _getBoxColor(int index) {
+    if (_board[index] == 'x' &&
+        xPositions.length == 3 &&
+        xPositions[0] == index) {
+      return const Color.fromARGB(255, 88, 88, 88);
+    } else if (_board[index] == '0' &&
+        oPositions.length == 3 &&
+        oPositions[0] == index) {
+      return const Color.fromARGB(255, 88, 88, 88);
+    }
+    return Colors.black;
+  }
+
   void _switchPlayer() {
     _currentPlayer = _currentPlayer == 'x' ? '0' : 'x';
   }
 
   void checkWinner() {
-    var lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
     for (var line in lines) {
       var a = _board[line[0]];
       var b = _board[line[1]];
@@ -58,21 +70,12 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
         break;
       }
     }
-
-    // if (winner == '' && !_board.contains('')) {
-    //   setState(() {
-    //     winner = 'Friendship 🤝';
-    //   });
-    // }
   }
 
   void _playMove(int index) {
     if (_board[index] == '' && winner == '') {
       setState(() {
         if (_currentPlayer == 'x') {
-          if (xPositions.length == 3) {
-            isPlay = true;
-          }
           if (xPositions.length >= 3) {
             int oldXPosition = xPositions.removeAt(0);
             _board[oldXPosition] = '';
@@ -99,11 +102,40 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
 
   void _playBot() {
     Future.delayed(const Duration(milliseconds: 600), () {
-      // Random
       List<int> controlBot = [];
-      for (int i = 0; i < _board.length; i++) {
-        if (_board[i] == '') {
-          controlBot.add(i);
+      List<int> winningMoves = [];
+      List<int> blockingMoves = [];
+
+      for (var line in lines) {
+        var a = _board[line[0]];
+        var b = _board[line[1]];
+        var c = _board[line[2]];
+        if (a == '0' && b == '0' && c == '') {
+          winningMoves.add(line[2]);
+        } else if (a == '0' && c == '0' && b == '') {
+          winningMoves.add(line[1]);
+        } else if (b == '0' && c == '0' && a == '') {
+          winningMoves.add(line[0]);
+        }
+
+        if (a == 'x' && b == 'x' && c == '') {
+          blockingMoves.add(line[2]);
+        } else if (a == 'x' && c == 'x' && b == '') {
+          blockingMoves.add(line[1]);
+        } else if (b == 'x' && c == 'x' && a == '') {
+          blockingMoves.add(line[0]);
+        }
+      }
+
+      if (winningMoves.isNotEmpty) {
+        controlBot.add(winningMoves.first);
+      } else if (blockingMoves.isNotEmpty) {
+        controlBot.add(blockingMoves.first);
+      } else {
+        for (int i = 0; i < _board.length; i++) {
+          if (_board[i] == '') {
+            controlBot.add(i);
+          }
         }
       }
 
@@ -243,7 +275,9 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
                   children: List.generate(
                     9,
                     (index) => GestureDetector(
-                      onTap: () => _playMove(index),
+                      onTap: () {
+                        _playMove(index);
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(5),
                         child: Container(
@@ -264,7 +298,7 @@ class _InfiniteGameScreen extends State<InfiniteGameScreen> {
                                 )
                               : const SizedBox(),
                           decoration: BoxDecoration(
-                              color: Colors.black,
+                              color: _getBoxColor(index),
                               borderRadius: BorderRadius.circular(10),
                               border:
                                   Border.all(color: Colors.white, width: 2)),
