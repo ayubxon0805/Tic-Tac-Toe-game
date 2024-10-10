@@ -221,6 +221,7 @@ class _ClassicGameScreen extends State<ClassicGameScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(5),
                         child: Container(
+                          // ignore: sort_child_properties_last
                           child: _board[index] != ""
                               ? Center(
                                   child: Image.asset(
